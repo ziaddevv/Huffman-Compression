@@ -15,7 +15,9 @@ struct TreeNode
     TreeNode(int v)
     {
         val=v;
-        ch='\n';
+        ch='\0';
+        isLeaf = false;  
+        left = right = nullptr;
     }
     TreeNode(int v,char c)
     {
@@ -53,6 +55,9 @@ class Tree
   {
     freq=f;
   }
+  Tree(){
+    root=nullptr;
+  }
   void init()
   {
     for(auto &[ch,f]:freq)
@@ -61,15 +66,47 @@ class Tree
         TreeNode*newNode=new TreeNode(f,ch);
         pq.push(newNode);
     }
-    //update rely on the bool isLeaf rather than # char
+    //update rely on the boolean isLeaf rather than # char
+
     // while(!pq.empty())
     // {
     //   cout<<pq.top()->ch<<" "<<pq.top()->val<<"\n";
     //   pq.pop();
     // }
   }
+void rebuildTree(const unordered_map<char,string>& encoded) {
+    root = new TreeNode(0);  // root with no char
+    root->isLeaf = false;
+
+    for (auto& [ch, code] : encoded) {
+        TreeNode* cur = root;
+        for (char bit : code) {
+            if (bit == '0') {
+                if (!cur->left) {
+                    cur->left = new TreeNode(0);
+                    cur->left->isLeaf = false;
+                }
+                cur = cur->left;
+            } else {
+                if (!cur->right) {
+                    cur->right = new TreeNode(0);
+                    cur->right->isLeaf = false;
+                }
+                cur = cur->right;
+            }
+        }
+        cur->ch = ch;
+        cur->isLeaf = true;
+    }
+}
+
   void BuildHofmanTree()
   {
+    if (pq.size() == 1) {
+        root = pq.top(); 
+        pq.pop();
+        return;
+    }
     while(!pq.empty())
     {
       TreeNode*left=pq.top();
@@ -87,22 +124,10 @@ class Tree
       pq.push(root);
     }
   }
-  void dfs(TreeNode*p)
-  {
-    if(p==nullptr)return;
-    
-    cout<<p->ch<<" "<<p->val<<"\n";
-    dfs(p->left);
-    dfs(p->right);
-  }
-  void dispaly()
-  {
-    dfs(root);
-  }
   void Traverse(TreeNode*p,string cur)
   {
     if(p==nullptr)return;
-    //we update here to check the isLeaf also
+    //we update here to check the isLeaf also no char #
     if(p->isLeaf==true)
     {
       encoded[p->ch]=cur;
@@ -122,27 +147,26 @@ class Tree
 
   }
 int decodeChar(TreeNode* p, int idx, const string& line, string& res) {
-    while (p->left || p->right) {  
+    while (!p->isLeaf) {  // keep movving until we hit a leaf
         if (line[idx] == '0')
             p = p->left;
         else
             p = p->right;
         idx++;
     }
-    //once left and right are null
     res.push_back(p->ch);  
     return idx;
 }
-//010101
 
-string getLine(const string& line) {
-    string res = "";
+string DecodeStream(const string& line) {
+    string res;
     int idx = 0;
     while (idx < (int)line.size()) {
         idx = decodeChar(root, idx, line, res);
     }
     return res;
 }
+
  
 
 };

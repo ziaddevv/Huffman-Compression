@@ -14,6 +14,12 @@ public:
         countBits = 0;
     }
 
+    // uint8_t byte_value(string stream,int code_length)
+    // {
+         
+
+    // }
+
     void convert(const string& line) {
         for (char c : line) {
             add(c == '1');
