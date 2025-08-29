@@ -140,10 +140,7 @@ void rebuildTree(const unordered_map<char,string>& encoded) {
   void encode()
   {
     Traverse(root,"");
-    for(auto it:encoded)
-    {
-      cout<<it.first<<" "<<it.second<<"\n";
-    }
+
 
   }
 int decodeChar(TreeNode* p, int idx, const string& line, string& res) {
